@@ -1,120 +1,159 @@
 "use client"
-import { FormControl, InputLabel, MenuItem, MenuItem, Select, TextField } from "@mui/material";
+import { CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { addDoc, collection } from "firebase/firestore";
 import { useFormik } from "formik";
-import *as yup from "yup";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import  * as yup from "yup";
+u
 
+
+useState
 const schema = yup.object().shape({
-    customerName: yup.string().required("Full name is required").min(10),
-    serviceType: yup.string().required("Service type is required").min(10),
-    deliveryDate: yup.date().required("Date is required").min(10),
-    amount: yup.number().required("Amount is required").min(10),
-    status: yup.string().oneOf(["Received", "In-progress", "Completed",]).required("Status is required"),
+    customerName: yup.string().required("Full name is required").min(5),
+    serviceType: yup.string().required("Barbing-services", "Catering-services", "Cleaning-services", "Fashion-Designing", "Logistics-services").min(10),
+    deliveryDate: yup.date().required("Date is required"),
+    amount: yup.number().required("Amount is requied").min(5000),
+    status: yup.string().oneOf(["Received","In-progress","Completed"]).required("Status is required"),
+    notes: yup.string().required("Note is required").min(8),
 })
 
 export default function NewOrder() {
-    const {handleSubmit,handleChange,handleBlur,Values,errors,touched} =useFormik({
+    const [progress, setProgress] = useState (false);
+    const {data : session} = useSession();
+    const {handleSubmit,handleChange,handleBlur,values,errors,touched} =useFormik({
         initialValues: {
             customerName:"",
             serviceType: "",
-            deliveryDate: "",
+            deliveryDate:"",
             amount: "",
             status: "",
             notes: "",
         },
-        onSubmit: ()=>{
-            console.log(`your name is ${Values.customerName}, you book for ${Values.serviceType} and your bill is ${Values>amount}`)
+        onSubmit:async(values, {resetForm})=>{
+             await addDoc(collection(db,"orders"),{
+                user: session?.user?.id,
+                customerName: values.customerName,
+                serviceType: values.serviceType,
+                deliveryDate: values.deliveryDate,
+                amount: values.amount,
+                status: values.status,
+                notes: values.notes,
+                timecreated: new Date().getTime,
+             }).then(()=>{
+                alert("Your order has been taken")
+                setProgress(false)
+                resetForm()
+             })
+             .catch(e=>{
+              console.error(e);
+              alert("Unable to submit")
+              setProgress(false)
+             })
         },
         validationSchema:schema
-    })
-    return(
-        <main className="min-h-screen max-w-2xl mx-auto my-10 px-6 py-8 bg-white shadow-lg rounded-xl">
-            <h1 className="text-2xl font-semibold mb-6 text-center">Make Your Oder</h1>
-            <form className="flex flex-col gap-4 mt-5">
+     })
+     return(
+        <main className="min-h max-w-xl mx-auto my-10 px-6 py-8 bg-white shadow-lg rounded-xl">
+            <h1 className="text-2xl font-semibold mb-6 text-center">Make Your Order</h1>
+            <form onSubmit={handleSubmit} 
+            className="flex flex-col gap-4 mt-5">
                 <div>
-                    <TextField 
+                    <TextField
                     fullWidth
+                    size="small"
                     label="Customer Name"
                     placeholder="Enter Full Name"
                     type="text"
                     id="customerName"
-                    value={Values.customerName}
+                    value={values.customerName}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     />
                     {touched.customerName && errors.customerName? <span className="text-red-500 text-xs">{errors.customerName}</span>: null}
                 </div>
-                <div>
-                    <TextField 
-                    fullWidth
+                <FormControl>
+                    <InputLabel></InputLabel>
+                    <Select
+                    labelId="serviceType"
+                    id="serviceType"
+                    name="serviceType"
+                    label="serviceType"
                     size="small"
-                    label="Service Type"
-                    placeholder="Enter service type"
-                    type="text"
-                    value={Values.text}
+                    value={values.serviceType}
                     onChange={handleChange}
-                    onBlur={handleBlur}
-                    id="serviceType"/>
-                     {touched.serviceType && errors.serviceType? <span className="text-red-500 text-xs">{errors.serviceType}</span>: null}
-                </div>
+                    onBlur={handleBlur}>
+                        <MenuItem value="Barbing-services">Barbing Services</MenuItem>
+                        <MenuItem value="Catering-services">Catering Services</MenuItem>
+                        <MenuItem value="Cleaning-services">Cleaning Services</MenuItem>
+                        <MenuItem value="Fashion-Designing">Fashion Designing</MenuItem>
+                        <MenuItem value="Logistics-services">Logistics Services</MenuItem>
+                    </Select>
+                    {touched.serviceType && errors.customerName? <span className="text-red-500 text-xs">{errors.serviceType}</span>: null}
+                </FormControl>
                 <div>
-                    <TextField 
+                    <TextField
                     fullWidth
                     size="small"
                     InputLabelProps={{shrink:true}}
                     type="date"
                     label="Delivery Date"
-                    value={Values.deliveryDate}
+                    value={values.deliveryDate}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     id="deliveryDate"/>
-                     {touched.deliveryDate && errors.deliveryDate? <span className="text-red-500 text-xs">{errors.deliveryDate}</span>: null}
+                    {touched.deliveryDate && errors.deliveryDate? <span className="text-red-500 text-xs">{errors.deliveryDate}</span>: null}
                 </div>
                 <div>
-                    <TextField 
+                    <TextField
                     fullWidth
                     size="small"
                     type="number"
                     label="Enter Amount"
-                    value={Values.amount}
+                    value={values.amount}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     id="amount"/>
-                     {touched.amount && errors.amount? <span className="text-red-500 text-xs">{errors.amount}</span>: null}
+                    {touched.amount && errors.amount? <span className="text-red-500 text-xs">{errors.amount}</span>: null}
                 </div>
                 <FormControl fullWidth>
                     <InputLabel id="orderStatus-label">Status</InputLabel>
-                    <Select 
-                    labelId="orderStatus-Label"
+                    <Select
+                    labelId="orderStatus-label"
                     id="status"
                     size="small"
                     label="Status"
                     name="status"
-                    value={Values.status}
+                    value={values.status}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     >
-                        <MenuItem Value="Received">Received</MenuItem>
-                        <MenuItem Value="In-progress">In progress</MenuItem>
-                        <MenuItem Value="Completed">Completed</MenuItem>
+                        <MenuItem value="Received">Received</MenuItem>
+                        <MenuItem value="In-progress">In progress</MenuItem>
+                        <MenuItem value="Completed">Completed</MenuItem>
+
                     </Select>
                     {touched.status && errors.status? <span className="text-red-500 text-xs">{errors.status}</span>: null}
                 </FormControl>
                 <div>
-                    <TextField 
+                    <TextField
                     fullWidth
                     type="text"
                     multiline
                     rows={2}
                     label="Notes"
                     placeholder="Notes/Comments"
-                    value={Values.status}
-                    onChange={handleChange}
+                    value={values.notes}
                     onBlur={handleBlur}
+                    onChange={handleChange}
                     id="notes"/>
-                     {touched.notes && errors.notes? <span className="text-red-500 text-xs">{errors.notes}</span>: null}
+                    {touched.notes && errors.notes? <span className="text-red-500 text-xs">{errors.notes}</span>: null}
                 </div>
-                <button type="submit" className="h[40px] w-full rounded-md shaadow-md bg-blue-500 text-white text-xl cursor-pointer">Submit</button>
+                <button type="submit" className="h-[40px] w-full flex justify-center items-center gap-8 rounded-md shadow-md bg-blue-500 text-white text-xl cursor-pointer ">Submit
+                    {!progress ? <CircularProgress color="inherit" size="30px" /> : null }
+                </button>
             </form>
+
         </main>
-    )
+     )
 }
