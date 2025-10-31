@@ -15,7 +15,7 @@ export default async function Login () {
             <form className="justify-items-center">
                <div className="w-full mb-2">
                   <TextField
-                  placeholder="@emmanuel.com"
+                  placeholder="@david.com"
                   type="email"
                   className="w-full"/>
                   <button type="submit" className="text-white bg-blue-500 rounded-md w-full hover:opacity-40 p-3 mt-2">Continue</button>
