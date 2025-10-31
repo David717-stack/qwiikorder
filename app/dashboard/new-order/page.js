@@ -165,7 +165,7 @@ export default function NewOrder() {
                 <Typography>{`Dear ${values.customerName} your order of ${values.serviceType} has been received and is being processed`}</Typography>
                 </DialogContent>
             <DialogActions>
-                <Button onClick={handleclose} color="primary" variant="contained" autoFocus>
+                <Button onClick={handleClose} color="primary" variant="contained" autoFocus>
                     Close
                 </Button>
             </DialogActions>
