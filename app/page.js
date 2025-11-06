@@ -1,6 +1,12 @@
 import Image from "next/image";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export  default async function Home() {
+  const session = await auth();
+  if(!session) {
+    redirect("/auth/login");
+  }
   return (
     <main className="text-green-700 text-4xl text-center font-bold mt-0 px-0 py-0">
       <section className="bg-gray-100 w-full h-[500px] px-10 mt-5 grid grid-cols-1 px-5 md;mt-5 md;grid-cols-2 lg;grid-cols-4">
@@ -68,6 +74,8 @@ export default function Home() {
 
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
  
 export const { handlers, signIn, signOut, auth } = NextAuth({

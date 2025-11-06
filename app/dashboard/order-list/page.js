@@ -63,8 +63,8 @@ export default function OrderList () {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                         {order.map((order)=>
-                        <TableRow key={order.id} sx={{borderBottom: "gray"}}>
+                         {order.map((order)=> <Link href={`/dashboard/order-list/${orders.id}`} key={order.id} >
+                        <TableRow sx={{borderBottom: "gray"}}>
                             <TableCell>{order.data.customerName}</TableCell>
                             <TableCell>{order.data.serviceType}</TableCell>
                             <TableCell>{order.data.deliveryDate}</TableCell>
@@ -73,6 +73,7 @@ export default function OrderList () {
                             <TableCell>{order.data.notes}</TableCell>
                             <TableCell><LuView className="text-2xl cursor-pointer"/></TableCell>
                         </TableRow>
+                        </Link>
                         )}
                     </TableBody>
                 </Table>

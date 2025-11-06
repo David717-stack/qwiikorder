@@ -5,11 +5,11 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import Link from "next/link";
 
 export function Navbar () {
-    const [menuOpen,setMenu] = useState(false);
+    const [menuOpen,setMenuOpen] = useState(false);
     const toggleMenu = () =>{
         setMenuOpen(!menuOpen)
     }
-
+    
     return (
         <main className="bg-gray-100 shadow shadow-gray-300 w-full sticky top-0">
            <div className="flex justify-between h-[50px] pt-3 px-5">
@@ -18,6 +18,7 @@ export function Navbar () {
                  <Link href="/"><li>Home</li></Link>
                  <Link href="/dashboard/new-order"><li>New-Order</li></Link>
                  <Link href="/dashboard/order-list"><li>OderList</li></Link>
+                 <Link href="/dashboard/order-summary"><li>summary</li></Link>
               </ul>
               <div className="hidden md:flex gap-3">
                  <Link href="/auth/login"><button className="w-[60px] h-[30px] text-white bg-blue-500 rounded-full cursor-pointer">Login</button></Link>
@@ -30,9 +31,10 @@ export function Navbar () {
            {menuOpen &&(
            <div className="px-5 pb-1 flex flex-col gap-2 md:hidden">
             <ul>
-                <li>Home</li>
-                <li>Order</li>
-                <li>OderList</li>
+            <Link href="/" className="flex justify-center"><li>Home</li></Link>
+                 <Link href="/dashboard/new-order" className="flex justify-center"><li>New-Order</li></Link>
+                 <Link href="/dashboard/order-list" className="flex justify-center"><li>OderList</li></Link>
+                 <Link href="/dashboard/order-summary" className="flex justify-center"><li>summary</li></Link>
             </ul>
              <Link href="/auth/login"><button className="w-[60px] h-[30px] text-white bg-blue-500 rounded-full cursor-pointer">Login</button></Link>
             <CgProfile className="text-2xl cursor-pointer"/>
